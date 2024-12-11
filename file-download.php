@@ -1,13 +1,8 @@
 <?php
+// Session start is still there, but no password check
 session_start();
-$password = "pass";
-$authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
 
-if (!$authenticated) {
-    header("Location: index.php");
-    exit();
-}
-
+// Retrieve the file data
 $filesData = json_decode(file_get_contents('data/files.json'), true);
 $shortLink = $_GET['id'];
 $file = array_filter($filesData, function($f) use ($shortLink) {
