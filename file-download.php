@@ -17,6 +17,12 @@ if (!$file) {
 }
 
 $filePath = $file['file_path'] . '/' . $file['original_name']; // Build the full file path
+
+// Determine if the file is an image, video, or audio for preview
+$fileExtension = strtolower(pathinfo($file['original_name'], PATHINFO_EXTENSION));
+$isImage = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']);
+$isVideo = in_array($fileExtension, ['mp4', 'webm', 'ogg']);
+$isAudio = in_array($fileExtension, ['mp3', 'wav', 'ogg']);
 ?>
 
 <!DOCTYPE html>
@@ -28,10 +34,36 @@ $filePath = $file['file_path'] . '/' . $file['original_name']; // Build the full
     <title>Download File</title>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
-    <div class="text-center p-8 bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
+    <div class="text-center p-8 bg-gray-800 rounded-lg shadow-lg max-w-4xl w-full">
         <h1 class="text-4xl font-bold mb-4">Download File</h1>
         <?php if ($file): ?>
             <p class="text-lg mb-6">File Name: <span class="font-semibold"><?php echo $file['original_name']; ?></span></p>
+            
+            <!-- Wrapper div for content preview (no border or extra space) -->
+            <div class="preview-container mb-6 w-full max-w-5xl mx-auto">
+                
+                <!-- Display image preview if it's an image -->
+                <?php if ($isImage): ?>
+                    <img src="<?php echo $filePath; ?>" alt="Image Preview" class="mb-4 w-full h-auto rounded-lg">
+                <?php endif; ?>
+
+                <!-- Display video preview if it's a video -->
+                <?php if ($isVideo): ?>
+                    <video controls class="mb-4 w-full h-auto rounded-lg">
+                        <source src="<?php echo $filePath; ?>" type="video/<?php echo $fileExtension; ?>">
+                        Your browser does not support the video tag.
+                    </video>
+                <?php endif; ?>
+
+                <!-- Display audio preview if it's an audio -->
+                <?php if ($isAudio): ?>
+                    <audio controls class="mb-4 w-full h-auto rounded-lg">
+                        <source src="<?php echo $filePath; ?>" type="audio/<?php echo $fileExtension; ?>">
+                        Your browser does not support the audio element.
+                    </audio>
+                <?php endif; ?>
+            </div>
+
             <form method="GET" action="<?php echo $filePath; ?>" download id="download-form">
                 <button type="submit" class="px-8 py-3 bg-indigo-600 text-white text-lg font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition" id="download-btn">
                     Download
